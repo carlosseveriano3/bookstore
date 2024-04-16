@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Books {
+  id              Int            @id @default(autoincrement())
+  slug            String         @db.VarChar(255)
+  title           String         @db.VarChar(255)
+  genre           String         @db.VarChar(255)
+  price           Decimal?       @db.Decimal(2, 0)
+  description     String         @db.VarChar(500)
+  author          String         @db.VarChar(255)
+  number_of_pages Int
+  bought_books    Bought_books[]
+  saved_books     Saved_books[]
+}
+
+model Bought_books {
+  id      Int      @id @default(autoincrement())
+  user_id Int
+  book_id Int
+  date    DateTime @db.Timestamp(6)
+  books   Books    @relation(fields: [book_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_book")
+  users   Users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user")
+}
+
+model Saved_books {
+  id      Int   @id @default(autoincrement())
+  user_id Int
+  book_id Int
+  books   Books @relation(fields: [book_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_book")
+  users   Users @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user")
+}
+
+model Users {
+  id           Int            @id @default(autoincrement())
+  password     String         @db.VarChar(255)
+  email        String         @db.VarChar(255)
+  name         String         @db.VarChar(255)
+  admin        Boolean?       @default(false)
+  bought_books Bought_books[]
+  saved_books  Saved_books[]
+}
