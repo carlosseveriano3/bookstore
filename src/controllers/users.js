@@ -39,8 +39,13 @@ export class UserController {
       select: { id: true, name: true, email: true, admin: true },
     });
 
-    const token = jwt.sign({ data: user }, process.env.JWT_KEY)
+    if (user) {
+      const token = jwt.sign({ data: user }, process.env.JWT_KEY)
+  
+      reply.send({ token });
+    } else {
+      reply.status(401).send({ message: 'user not found' });
+    }
 
-    reply.send({ token });
   }
 }
